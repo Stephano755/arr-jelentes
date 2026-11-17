@@ -98,6 +98,11 @@ function findRapidKey(text) {
   return /^[A-Za-z0-9]{40,60}$/.test(s) ? s : null;   // ismeretlen, de kulcsnak tűnő formátum
 }
 
+// eszköz felismerése az eszközfüggő varázsló-szövegekhez (iPadOS 13+ Macnek mutatja magát)
+document.body.dataset.dev = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
+  (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1) ? 'ios'
+  : /Android/.test(navigator.userAgent) ? 'android' : 'pc';
+
 let wizForced = false, wizJustDone = false;
 const wizStep = () => store.get('wizStep', 1);
 

@@ -115,6 +115,9 @@
   .wiz-manual input { min-height: 44px; padding: 8px 10px; font: inherit; font-size: 15px; color: var(--fg);
                       background: var(--field); border: 1px solid var(--border); border-radius: 10px; min-width: 0; }
   .wiz-done { color: var(--ok); font-weight: 600; }
+  .dev { display: none; }
+  body[data-dev="ios"] .dev-ios, body[data-dev="android"] .dev-android, body[data-dev="pc"] .dev-pc { display: inline; }
+  body[data-dev="ios"] .st-tip.dev-ios, body[data-dev="android"] .st-tip.dev-android { display: block; }
   @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,.6); } 50% { box-shadow: 0 0 0 8px rgba(59,130,246,0); } }
   .pulse { animation: pulse 1.4s ease-in-out 3; }
   @media (max-width: 420px) { .row, .btns { grid-template-columns: 1fr; } }
@@ -123,7 +126,7 @@
 </head>
 <body>
 <main>
-  <header><h1>ARR Jelentés</h1><nav class="hlinks"><a href="utmutato.html">Útmutató</a><span>v2.8</span></nav></header>
+  <header><h1>ARR Jelentés</h1><nav class="hlinks"><a href="utmutato.html">Útmutató</a><span>v2.9</span></nav></header>
 
   <!-- Kulcsvarázsló: első indításkor, amíg nincs AeroDataBox kulcs -->
   <section class="card wiz" id="wizard" hidden>
@@ -151,8 +154,11 @@
       </li>
       <li data-step="3">
         <div class="st-title">Kulcs másolása</div>
-        <div class="st-text">Bal oldalt <b>My Apps</b> → <b>default-application_…</b> melletti <b>˅</b> → <b>Authorization</b> → a kulcs melletti <b>másolás</b> ikon.
-          <span class="st-tip">Ha a szöveg betűnként, függőlegesen jelenik meg: fordítsd fekvőre a telefont, vagy kapcsold be az asztali nézetet.</span></div>
+        <div class="st-text">
+          <span class="dev dev-android"><b>Először:</b> a megnyíló RapidAPI oldalon jobb felül <b>⋮</b> → pipáld be az <b>Asztali webhely</b> opciót (telefonos nézetben az oldal használhatatlan).<br></span>
+          <span class="dev dev-ios"><b>Először:</b> a megnyíló RapidAPI oldalon a címsorban <b>aA</b> → <b>Asztali webhely kérése</b> (telefonos nézetben az oldal használhatatlan).<br></span>
+          <span class="dev dev-ios dev-android">Utána a</span><span class="dev dev-pc">A</span> bal oldali menüben: <b>default-application_…</b> melletti <b>˅</b> → <b>Authorization</b> → a kulcs melletti <b>másolás</b> ikon<span class="dev dev-ios dev-android"> (két ujjal nagyíthatsz)</span>.
+          <span class="st-tip dev dev-ios dev-android">Ha még így is túl kicsi vagy betűnként függőleges a szöveg, fordítsd fekvőre a telefont.</span></div>
         <div class="st-btns">
           <a class="btn" id="wizOpenKeys" href="https://rapidapi.com/developer/apps" target="_blank" rel="noopener">Kulcs megnyitása</a>
           <button class="btn ghost" data-go="4">Kimásoltam</button>
