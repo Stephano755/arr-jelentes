@@ -1,0 +1,19 @@
+# Személyes adatok és generált jelentések – ne kerüljenek a repóba
+# (a beépített sablon – sablon.xlsm, mobil/sablon.xlsm – benne van)
+*.xlsm
+!sablon.xlsm
+!mobil/sablon.xlsm
+*.pdf
+_test/
+
+# Build és környezet
+.venv/
+build/
+dist/
+*.spec
+build.log
+__pycache__/
+
+# Helyi eszközbeállítások
+.claude/
+.netlify/

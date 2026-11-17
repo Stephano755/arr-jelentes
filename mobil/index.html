@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ARR Jelentés</title>
+<meta name="theme-color" content="#0b0b0c">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="ARR Jelentés">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+  :root {
+    --bg: #0b0b0c; --card: #141416; --field: #1c1c20; --border: #2a2a30;
+    --fg: #ececf1; --muted: #9b9ba5; --accent: #3b82f6; --accent-2: #2563eb;
+    --ok: #4ade80; --err: #f87171; --warn: #fbbf24; --r: 14px;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html, body { margin: 0; background: var(--bg); color: var(--fg); }
+  body {
+    font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+             max(24px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    -webkit-text-size-adjust: 100%;
+  }
+  main { max-width: 680px; margin: 0 auto; display: grid; gap: 14px; }
+  header { display: flex; align-items: baseline; justify-content: space-between; padding: 4px 2px 2px; }
+  h1 { font-size: 22px; margin: 0; letter-spacing: -.01em; }
+  header span { color: var(--muted); font-size: 13px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  label.f { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+  select, input[type=date], input[type=password], input[type=text] {
+    width: 100%; min-height: 46px; padding: 10px 12px; font: inherit; color: var(--fg);
+    background: var(--field); border: 1px solid var(--border); border-radius: 10px; appearance: none; -webkit-appearance: none;
+  }
+  select { background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+    background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 34px; }
+  input::placeholder { color: #6b6b75; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 10px 16px;
+    font-weight: 600; font-size: 16px; line-height: 1.15; font-family: inherit; color: var(--fg); background: var(--field);
+    border: 1px solid var(--border); border-radius: 10px; cursor: pointer; text-align: center;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; min-height: 54px; font-size: 17px; }
+  .btn.primary:disabled { background: var(--border); border-color: var(--border); color: var(--muted); }
+  .btn.danger { color: var(--err); }
+  .file { position: relative; overflow: hidden; }
+  .file input { position: absolute; inset: 0; opacity: 0; cursor: pointer; font-size: 0; }
+  .fname { color: var(--muted); font-size: 14px; word-break: break-all; }
+  .kv { display: flex; gap: 8px; font-size: 15px; }
+  .kv b { color: var(--muted); font-weight: 500; min-width: 72px; }
+  .warn { color: var(--warn); }
+  #result { border-color: #1f4f2f; background: #0f1a13; }
+  #result .name { font-weight: 600; font-size: 17px; word-break: break-all; }
+  .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  #log { font: 12.5px/1.5 ui-monospace, Menlo, Consolas, monospace; color: #c7c7d1; max-height: 260px; overflow: auto;
+         background: var(--field); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; white-space: pre-wrap; }
+  #log:empty::before { content: "A napló itt jelenik meg."; color: #6b6b75; }
+  #log .ok { color: var(--ok); } #log .err { color: var(--err); } #log .muted { color: var(--muted); }
+  details.card { padding: 0; gap: 0; }
+  details summary { list-style: none; padding: 16px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::after { content: "▾"; color: var(--muted); }
+  details[open] summary::after { content: "▴"; }
+  details .inner { padding: 0 16px 16px; display: grid; gap: 12px; }
+  h2 { font-size: 14px; margin: 6px 0 0; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+  .hint { font-size: 13px; color: var(--muted); margin: 0; }
+  input[type=number] { width: 100%; min-height: 46px; padding: 10px 12px; font: inherit; color: var(--fg);
+    background: var(--field); border: 1px solid var(--border); border-radius: 10px; }
+  .stat-head { display: flex; justify-content: space-between; align-items: baseline; }
+  .stat-head span { color: var(--muted); font-size: 13px; }
+  #stats { display: grid; gap: 10px; }
+  .stat-top { display: flex; justify-content: space-between; gap: 8px; font-size: 14px; }
+  .stat-top b { font-weight: 500; }
+  .stat-top span { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .bar { height: 6px; background: var(--field); border-radius: 3px; overflow: hidden; margin-top: 6px; }
+  .bar i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+  .stat.low .bar i { background: var(--warn); }
+  .stat.low .stat-top span { color: var(--warn); }
+  @media (max-width: 420px) { .row, .btns { grid-template-columns: 1fr; } }
+</style>
+<script src="vendor/jszip.min.js"></script>
+</head>
+<body>
+<main>
+  <header><h1>ARR Jelentés</h1><span>v2.4</span></header>
+
+  <section class="card">
+    <label class="btn file">📄 PDF kiválasztása
+      <input id="pdfInput" type="file" accept="application/pdf,.pdf">
+    </label>
+    <div class="fname" id="pdfName">Nincs kiválasztva (printout-with-passengers…pdf)</div>
+  </section>
+
+  <section class="card">
+    <div class="row">
+      <label class="f">Hajó<select id="ship"></select></label>
+      <label class="f">Dátum<input id="date" type="date"></label>
+    </div>
+    <div class="kv"><b>Kísérők</b><span id="escorts">–</span></div>
+    <div class="kv"><b>Sablon</b><span id="tplName">–</span></div>
+  </section>
+
+  <button class="btn primary" id="go" disabled>Jelentés készítése</button>
+
+  <section class="card" id="result" hidden>
+    <div class="name" id="resultName"></div>
+    <div class="btns">
+      <button class="btn" id="share">Megosztás / Mentés</button>
+      <button class="btn" id="download">Letöltés</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="stat-head"><b>API hívások</b><span id="statsMonth"></span></div>
+    <div id="stats"></div>
+  </section>
+
+  <div id="log" aria-live="polite"></div>
+
+  <details class="card" id="settings">
+    <summary>Beállítások</summary>
+    <div class="inner">
+      <h2>Excel sablon</h2>
+      <p class="hint">Alapból a beépített „BASZÓ ARR 2024 v3.2” sablont használja. Ha másikra van szükség, itt cserélheted; az app megjegyzi.</p>
+      <div class="btns">
+        <label class="btn file">Másik sablon…<input id="tplInput" type="file" accept=".xlsm,application/vnd.ms-excel.sheet.macroEnabled.12"></label>
+        <button class="btn" id="tplReset" hidden>Beépített sablon</button>
+      </div>
+
+      <h2>API kulcsok</h2>
+      <p class="hint" id="keyState"></p>
+      <input id="keyAdb" type="password" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <input id="keyAv" type="password" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <div class="btns">
+        <button class="btn" id="saveKeys">Kulcsok mentése</button>
+        <button class="btn danger" id="deleteKeys">Kulcsok törlése</button>
+      </div>
+      <p class="hint">A kulcsok csak ezen az eszközön, ebben a böngészőben/appban tárolódnak.</p>
+
+      <h2>Havi API keret</h2>
+      <div class="row">
+        <label class="f">AeroDataBox<input id="limAdb" type="number" inputmode="numeric" min="1"></label>
+        <label class="f">Aviationstack<input id="limAv" type="number" inputmode="numeric" min="1"></label>
+      </div>
+      <button class="btn" id="saveLimits">Keretek mentése</button>
+      <p class="hint">A számláló eszközönként, havonta számol; minden hónap elején nulláról indul.</p>
+    </div>
+  </details>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
