@@ -122,7 +122,20 @@ function renderWizard() {
   $('wizDone').hidden = !wizJustDone;
   $('wizClose').textContent = wizJustDone ? 'Bezárás' : 'Később';
 }
-function setWizStep(n) { store.set('wizStep', Math.max(wizStep(), n)); renderWizard(); }
+// előre csak léptet (nem ugrik vissza magától); exact=true esetén pontosan oda áll (visszalépés)
+function setWizStep(n, exact = false) {
+  store.set('wizStep', exact ? Math.min(Math.max(n, 1), 4) : Math.max(wizStep(), n));
+  if (exact) store.del('wizAwaitKey');
+  renderWizard();
+}
+document.querySelectorAll('#wizard [data-back]').forEach(b =>
+  b.addEventListener('click', () => setWizStep(wizStep() - 1, true)));
+// kész (pipás) lépésre koppintva oda lehet visszaugrani
+document.querySelectorAll('#wizard .steps li').forEach(li =>
+  li.addEventListener('click', e => {
+    if (!li.classList.contains('done') || wizJustDone || e.target.closest('a,button,input')) return;
+    setWizStep(+li.dataset.step, true);
+  }));
 
 function saveWizardKey(key) {
   store.set('key.aerodatabox', key);

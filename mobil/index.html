@@ -115,6 +115,10 @@
   .wiz-manual input { min-height: 44px; padding: 8px 10px; font: inherit; font-size: 15px; color: var(--fg);
                       background: var(--field); border: 1px solid var(--border); border-radius: 10px; min-width: 0; }
   .wiz-done { color: var(--ok); font-weight: 600; }
+  .wiz-back { justify-self: start; font-size: 14px; }
+  .steps li.done .wiz-back, .steps li.todo .wiz-back { display: none; }
+  .steps li.done { cursor: pointer; }
+  .steps li.done .st-title::after { content: "· módosítás"; margin-left: 8px; font-weight: 400; font-size: 13px; color: var(--muted); }
   .reminder { display: grid; gap: 4px; width: 100%; text-align: left; cursor: pointer; font: inherit; font-size: 14px;
               color: var(--fg); background: #2a2410; border: 1px solid #5a4a1a; border-radius: var(--r); padding: 12px 14px; }
   .reminder b { color: var(--warn); font-size: 15px; }
@@ -129,7 +133,7 @@
 </head>
 <body>
 <main>
-  <header><h1>ARR Jelentés</h1><nav class="hlinks"><a href="utmutato.html">Útmutató</a><span>v3.0</span></nav></header>
+  <header><h1>ARR Jelentés</h1><nav class="hlinks"><a href="utmutato.html">Útmutató</a><span>v3.1</span></nav></header>
 
   <!-- Kulcsvarázsló: első indításkor, amíg nincs AeroDataBox kulcs -->
   <section class="card wiz" id="wizard" hidden>
@@ -154,6 +158,7 @@
           <a class="btn" href="https://rapidapi.com/aedbx-aedbx/api/aerodatabox/pricing" target="_blank" rel="noopener">Csomag kiválasztása</a>
           <button class="btn ghost" data-go="3">Kész, megvan</button>
         </div>
+        <button class="link wiz-back" data-back>← Vissza az előző lépésre</button>
       </li>
       <li data-step="3">
         <div class="st-title">Kulcs másolása</div>
@@ -166,6 +171,7 @@
           <a class="btn" id="wizOpenKeys" href="https://rapidapi.com/developer/apps" target="_blank" rel="noopener">Kulcs megnyitása</a>
           <button class="btn ghost" data-go="4">Kimásoltam</button>
         </div>
+        <button class="link wiz-back" data-back>← Vissza az előző lépésre</button>
       </li>
       <li data-step="4">
         <div class="st-title">Kulcs mentése</div>
@@ -177,6 +183,7 @@
           <input id="wizManual" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="…vagy illeszd be ide kézzel">
           <button class="btn" id="wizManualSave">Mentés</button>
         </div>
+        <button class="link wiz-back" data-back>← Vissza az előző lépésre</button>
       </li>
     </ol>
     <div class="wiz-done" id="wizDone" hidden>✓ Kulcs elmentve – kész is vagy! Válaszd ki a PDF-et.</div>
