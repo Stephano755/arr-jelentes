@@ -32,7 +32,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, simpledialog, ttk
 
 APP_NAME = "ARR Jelentés"
-APP_VERSION = "2.4"
+APP_VERSION = "2.5"
 CONFIG_DIR = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), "ARR-Jelentes")
 CONFIG_PATH = os.path.join(CONFIG_DIR, "config.json")
 
@@ -721,7 +721,9 @@ def build_report(cfg, pdf_path, ship, date, template, keys, log, parsed=None):
     return out
 
 
-DEFAULT_LIMITS = {"aerodatabox": None, "aviationstack": 100}   # Aviationstack ingyenes csomag: 100/hó
+# AeroDataBox Basic (ingyenes): 400 egység/hó, egy TIER 2 hívás 2 egység → 200 hívás.
+# Aviationstack ingyenes csomag: 100 hívás/hó.
+DEFAULT_LIMITS = {"aerodatabox": 200, "aviationstack": 100}
 API_LABELS = {"aerodatabox": "AeroDataBox", "aviationstack": "Aviationstack"}
 
 

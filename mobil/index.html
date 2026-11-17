@@ -29,11 +29,14 @@
     -webkit-text-size-adjust: 100%;
   }
   main { max-width: 680px; margin: 0 auto; display: grid; gap: 14px; }
-  header { display: flex; align-items: baseline; justify-content: space-between; padding: 4px 2px 2px; }
-  h1 { font-size: 22px; margin: 0; letter-spacing: -.01em; }
+  header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 2px 2px; }
+  h1 { font-size: 22px; margin: 0; letter-spacing: -.01em; white-space: nowrap; }
   header span { color: var(--muted); font-size: 13px; }
-  .hlinks { display: flex; align-items: baseline; gap: 14px; }
-  .hlinks a { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 15px; }
+  .hlinks { display: flex; align-items: center; gap: 8px; }
+  .hlinks { flex-wrap: wrap; justify-content: flex-end; row-gap: 6px; }
+  .hbtn { color: var(--accent); background: var(--field); border: 1px solid var(--border); border-radius: 999px;
+          padding: 6px 12px; font-family: inherit; font-weight: 600; font-size: 14px; line-height: 1.2;
+          text-decoration: none; cursor: pointer; white-space: nowrap; }
   .hint a { color: var(--accent); }
   .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; }
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -136,7 +139,7 @@
 </head>
 <body>
 <main>
-  <header><h1>ARR Jelentés</h1><nav class="hlinks"><a href="utmutato.html">Útmutató</a><span>v3.3</span></nav></header>
+  <header><h1>ARR Jelentés</h1><nav class="hlinks"><button class="hbtn" id="wizHeader">🔑 Kulcsvarázsló</button><a class="hbtn" href="utmutato.html">Útmutató</a><span>v3.4</span></nav></header>
 
   <!-- Kulcsvarázsló: első indításkor, amíg nincs AeroDataBox kulcs -->
   <section class="card wiz" id="wizard" hidden>
@@ -216,7 +219,7 @@
       <label class="f">Hajó<select id="ship"></select></label>
       <label class="f">Dátum<input id="date" type="date"></label>
     </div>
-    <div class="kv"><b>Kísérők</b><span id="escorts">–</span></div>
+    <div class="kv"><b>Dolgozók</b><span id="escorts">–</span></div>
     <div class="kv"><b>Sablon</b><span id="tplName">–</span></div>
   </section>
 

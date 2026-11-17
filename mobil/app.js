@@ -183,6 +183,7 @@ $('wizReminder').addEventListener('click', () => {
   renderWizard();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+$('wizHeader').addEventListener('click', () => $('wizOpen').click());
 $('wizOpen').addEventListener('click', () => {
   wizForced = true; wizJustDone = false; wizHiddenNow = false;
   if (!store.get('key.aerodatabox')) store.set('wizStep', Math.min(wizStep(), 3));
@@ -240,7 +241,8 @@ function updateGo() {
 
 // ---------------------------------------------------------------- API hívás számláló + havi keret
 const API_LABELS = { aerodatabox: 'AeroDataBox', aviationstack: 'Aviationstack' };
-const DEFAULT_LIMITS = { aerodatabox: null, aviationstack: 100 };   // Aviationstack ingyenes: 100/hó
+// AeroDataBox Basic: 400 egység/hó, egy TIER 2 hívás 2 egység → 200 hívás; Aviationstack ingyenes: 100/hó
+const DEFAULT_LIMITS = { aerodatabox: 200, aviationstack: 100 };
 const monthKey = () => new Date().toISOString().slice(0, 7);
 let runCalls = { aerodatabox: 0, aviationstack: 0 };
 
@@ -273,7 +275,7 @@ function renderStats() {
     box.append(row);
   }
   $('statsMonth').textContent = monthKey().replace('-', '.') + '. hónap';
-  $('limAdb').placeholder = limitOf('aerodatabox') ? String(limitOf('aerodatabox')) : 'pl. 300';
+  $('limAdb').placeholder = limitOf('aerodatabox') ? String(limitOf('aerodatabox')) : '200';
   $('limAv').placeholder = String(limitOf('aviationstack') || '');
 }
 $('saveLimits').addEventListener('click', () => {
@@ -441,7 +443,7 @@ $('go').addEventListener('click', async () => {
     const transfers = transfersFor(parsed, ship);
     if (!transfers.length) throw new Error(`A PDF-ben nincs ${ship} transzfer.`);
     const escorts = escortsFor(parsed, ship);
-    log(`— ${ship} ${date.replace(/-/g, '.')}: ${transfers.length} transzfer, kísérők: ${escorts.join(', ') || '–'}`);
+    log(`— ${ship} ${date.replace(/-/g, '.')}: ${transfers.length} transzfer, dolgozók: ${escorts.join(', ') || '–'}`);
     if (transfers.length > REPORT_ROWS.length) log(`  ! ${transfers.length} transzfer van, a sablonban csak ${REPORT_ROWS.length} sor.`, 'err');
 
     // 1) egy hívással az összes BUD érkezés (12 óránként 1 hívás)
