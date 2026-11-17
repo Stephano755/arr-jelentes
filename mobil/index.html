@@ -32,6 +32,9 @@
   header { display: flex; align-items: baseline; justify-content: space-between; padding: 4px 2px 2px; }
   h1 { font-size: 22px; margin: 0; letter-spacing: -.01em; }
   header span { color: var(--muted); font-size: 13px; }
+  .hlinks { display: flex; align-items: baseline; gap: 14px; }
+  .hlinks a { color: var(--accent); text-decoration: none; font-weight: 600; font-size: 15px; }
+  .hint a { color: var(--accent); }
   .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 16px; display: grid; gap: 12px; }
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   label.f { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
@@ -90,7 +93,7 @@
 </head>
 <body>
 <main>
-  <header><h1>ARR Jelentés</h1><span>v2.4</span></header>
+  <header><h1>ARR Jelentés</h1><nav class="hlinks"><a href="utmutato.html">Útmutató</a><span>v2.5</span></nav></header>
 
   <section class="card">
     <label class="btn file">📄 PDF kiválasztása
@@ -136,6 +139,7 @@
       </div>
 
       <h2>API kulcsok</h2>
+      <p class="hint">Még nincs kulcsod? <a href="utmutato.html#aerodatabox">Így szerezheted meg (útmutató linkekkel)</a></p>
       <p class="hint" id="keyState"></p>
       <input id="keyAdb" type="password" autocomplete="off" autocapitalize="off" spellcheck="false">
       <input id="keyAv" type="password" autocomplete="off" autocapitalize="off" spellcheck="false">

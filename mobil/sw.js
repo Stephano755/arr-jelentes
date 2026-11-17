@@ -1,8 +1,8 @@
 // Offline gyorsítótár az app fájljaihoz; az API hívásokat nem érinti.
-const CACHE = 'arr-jelentes-v2.4';
+const CACHE = 'arr-jelentes-v2.5';
 const FILES = ['./', 'index.html', 'app.js', 'pdfparse.js', 'xlsm.js', 'manifest.webmanifest',
   'vendor/jszip.min.js', 'vendor/pdf.min.mjs', 'vendor/pdf.worker.min.mjs',
-  'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png', 'sablon.xlsm'];
+  'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png', 'sablon.xlsm', 'utmutato.html'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES))); self.skipWaiting(); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))));

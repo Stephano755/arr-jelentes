@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="hu">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Útmutató – ARR Jelentés</title>
+<meta name="theme-color" content="#0b0b0c">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<style>
+  :root {
+    --bg: #0b0b0c; --card: #141416; --field: #1c1c20; --border: #2a2a30;
+    --fg: #ececf1; --muted: #9b9ba5; --accent: #3b82f6; --ok: #4ade80; --warn: #fbbf24; --r: 14px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--fg); }
+  body {
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right))
+             max(32px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+    -webkit-text-size-adjust: 100%;
+  }
+  main { max-width: 720px; margin: 0 auto; display: grid; gap: 14px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 2px; }
+  h1 { font-size: 22px; margin: 0; }
+  .back { color: var(--accent); text-decoration: none; font-weight: 600; white-space: nowrap; }
+  nav.toc { display: flex; flex-wrap: wrap; gap: 8px; }
+  nav.toc a { color: var(--fg); text-decoration: none; background: var(--field); border: 1px solid var(--border);
+              border-radius: 999px; padding: 6px 12px; font-size: 14px; }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 18px; }
+  h2 { font-size: 18px; margin: 0 0 4px; display: flex; align-items: center; gap: 10px; }
+  .tag { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: #10261a; color: var(--ok); }
+  .tag.opt { background: #2a2410; color: var(--warn); }
+  .lead { color: var(--muted); margin: 0 0 12px; }
+  ol { margin: 0; padding-left: 22px; display: grid; gap: 10px; }
+  li::marker { color: var(--muted); font-weight: 600; }
+  a { color: #7aa7ff; }
+  a.btn { display: inline-block; margin-top: 6px; padding: 8px 14px; background: var(--accent); color: #fff;
+          text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 15px; }
+  code, kbd { font: 14px ui-monospace, Menlo, Consolas, monospace; background: var(--field); border: 1px solid var(--border);
+              border-radius: 6px; padding: 1px 6px; }
+  .note { margin-top: 14px; padding: 12px 14px; border-radius: 10px; background: var(--field); border: 1px solid var(--border);
+          font-size: 15px; }
+  .note b { color: var(--warn); }
+  .note.ok b { color: var(--ok); }
+  details { margin-top: 12px; background: var(--field); border: 1px solid var(--border); border-radius: 10px; }
+  details summary { padding: 12px 14px; cursor: pointer; font-weight: 600; }
+  details > div { padding: 0 14px 14px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .grid > div { background: var(--field); border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-size: 15px; }
+  .grid b { display: block; margin-bottom: 4px; }
+  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Útmutató</h1>
+    <a class="back" href="./">← Vissza az apphoz</a>
+  </header>
+
+  <nav class="toc">
+    <a href="#aerodatabox">1. AeroDataBox kulcs</a>
+    <a href="#aviationstack">2. Aviationstack kulcs</a>
+    <a href="#megadas">3. Kulcsok megadása</a>
+    <a href="#telepites">4. Telepítés</a>
+  </nav>
+
+  <section id="aerodatabox">
+    <h2>1. AeroDataBox kulcs <span class="tag">szükséges</span></h2>
+    <p class="lead">Ebből jönnek a valós érkezési idők és a legtöbb járatszám-csere. A RapidAPI-n keresztül működik, ingyenes csomaggal, bankkártya nélkül.</p>
+    <ol>
+      <li>Regisztrálj (vagy jelentkezz be) a RapidAPI-n – Google-fiókkal is lehet.<br>
+        <a class="btn" href="https://rapidapi.com/auth/sign-up" target="_blank" rel="noopener">RapidAPI regisztráció</a></li>
+      <li>Nyisd meg az AeroDataBox <b>Pricing</b> oldalát, és válaszd az ingyenes <b>Basic</b> csomagot (<i>Subscribe</i>). Ehhez nem kell kártya; ha a keret elfogy, a kérések egyszerűen elutasításra kerülnek.<br>
+        <a class="btn" href="https://rapidapi.com/aedbx-aedbx/api/aerodatabox/pricing" target="_blank" rel="noopener">AeroDataBox csomagok</a></li>
+      <li>Másold ki a kulcsodat (<code>X-RapidAPI-Key</code>): a RapidAPI-n felül a <b>Console</b> → az alkalmazásod (<code>default-application_…</code>) → <b>Authorization</b> / kulcsok résznél, a másolás ikonnal.<br>
+        <a class="btn" href="https://rapidapi.com/developer/apps" target="_blank" rel="noopener">Saját alkalmazások (kulcs)</a></li>
+    </ol>
+    <details>
+      <summary>Nem lehet kimásolni a kulcsot? – így biztosan megy (számítógépen)</summary>
+      <div>
+        <ol>
+          <li>Nyisd meg az AeroDataBox oldalt, és bármelyik végpontnál menj az <b>Authorization</b> fülre – ott látszik az <code>X-RapidAPI-Key</code> mező.
+            <br><a href="https://rapidapi.com/aedbx-aedbx/api/aerodatabox" target="_blank" rel="noopener">AeroDataBox a RapidAPI-n</a></li>
+          <li>Kattints <b>jobb gombbal</b> a kulcs mezőjére → <b>Vizsgálat</b> (Inspect). Megnyílik a fejlesztői panel, kijelölve a mezőt.</li>
+          <li>Keresd meg a kijelölt sorban a <code>value="…"</code> részt – az idézőjelek közti hosszú szöveg a kulcs. Dupla kattintással kijelölheted, majd <kbd>Ctrl</kbd>+<kbd>C</kbd>.</li>
+        </ol>
+        <p class="note"><b>Telefonra:</b> a kulcsot a legegyszerűbb a gépen kimásolni, és magadnak elküldeni (pl. saját e-mailben vagy jegyzetben), majd a telefonon beilleszteni.</p>
+      </div>
+    </details>
+    <p class="note"><b>Vigyázz a kulcsra:</b> olyan, mint egy jelszó – ne küldd el másnak, és képernyőképen se látsszon. Ha kiszivárgott, a RapidAPI-n új kulcsot kérhetsz.</p>
+  </section>
+
+  <section id="aviationstack">
+    <h2>2. Aviationstack kulcs <span class="tag opt">nem kötelező</span></h2>
+    <p class="lead">Csak tartalék a DL / AA / UA codeshare-járatszámok cseréjéhez (pl. AA → BA), ha az AeroDataBox listájából és a PDF-ből nem derül ki. Ingyenes csomag: havi 100 kérés, bankkártya nélkül.</p>
+    <ol>
+      <li>Regisztrálj az ingyenes (<b>Free</b>) csomaggal.<br>
+        <a class="btn" href="https://aviationstack.com/signup/free" target="_blank" rel="noopener">Aviationstack regisztráció</a></li>
+      <li>Bejelentkezés után a <b>Dashboard</b> tetején látod: <i>Your API Access Key</i> – a mellette lévő gombbal másolhatod.<br>
+        <a class="btn" href="https://aviationstack.com/dashboard" target="_blank" rel="noopener">Aviationstack dashboard</a></li>
+    </ol>
+    <p class="note"><b>Tudnivaló:</b> az ingyenes Aviationstack csomag csak titkosítatlan kapcsolatot enged, ezért a <b>böngészős / mobil</b> appban nem használható – ott az app a PDF-ből és az AeroDataBox listájából párosít. A Windowsos (EXE) programban működik.</p>
+  </section>
+
+  <section id="megadas">
+    <h2>3. Kulcsok megadása az appban</h2>
+    <ol>
+      <li>Az app alján nyisd meg a <b>Beállítások</b> részt.</li>
+      <li>Az <b>API kulcsok</b> alatt illeszd be az AeroDataBox (és ha van, az Aviationstack) kulcsot, majd <b>Kulcsok mentése</b>.</li>
+      <li>Kész – a kulcsot nem kell többet megadni. A <b>Kulcsok törlése</b> gombbal bármikor törölheted.</li>
+    </ol>
+    <p class="note ok"><b>Mindenkinek a sajátja:</b> a kulcsok, a havi API-számláló és a választott sablon <b>csak a te eszközödön</b> tárolódnak – nem kerülnek fel a szerverre, és más nem látja őket. Ha többen használjátok az appot, mindenki a saját kulcsát adja meg a saját telefonján / gépén.</p>
+  </section>
+
+  <section id="telepites">
+    <h2>4. Telepítés a kezdőképernyőre</h2>
+    <p class="lead">Nem kötelező, de így appként indul, teljes képernyőn, és internet nélkül is megnyílik.</p>
+    <div class="grid">
+      <div><b>iPhone / iPad</b>Safariban nyisd meg az appot → <b>Megosztás</b> ikon → <b>Főképernyőhöz adás</b>.</div>
+      <div><b>Android</b>Chrome-ban → jobb felső <b>⋮</b> menü → <b>Telepítés</b> / <b>Hozzáadás a kezdőképernyőhöz</b>.</div>
+      <div><b>Windows / Mac</b>Chrome vagy Edge → a címsor jobb oldalán a <b>Telepítés</b> ikon.</div>
+    </div>
+    <p class="note"><b>iPhone / iPad:</b> a Safari és a kezdőképernyőre tett app külön tárolót használ – a kulcsokat a <b>kezdőképernyős appban</b> add meg.</p>
+  </section>
+
+  <p style="text-align:center"><a class="back" href="./">← Vissza az apphoz</a></p>
+</main>
+</body>
+</html>
