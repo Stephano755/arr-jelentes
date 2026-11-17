@@ -115,6 +115,9 @@
   .wiz-manual input { min-height: 44px; padding: 8px 10px; font: inherit; font-size: 15px; color: var(--fg);
                       background: var(--field); border: 1px solid var(--border); border-radius: 10px; min-width: 0; }
   .wiz-done { color: var(--ok); font-weight: 600; }
+  .reminder { display: grid; gap: 4px; width: 100%; text-align: left; cursor: pointer; font: inherit; font-size: 14px;
+              color: var(--fg); background: #2a2410; border: 1px solid #5a4a1a; border-radius: var(--r); padding: 12px 14px; }
+  .reminder b { color: var(--warn); font-size: 15px; }
   .dev { display: none; }
   body[data-dev="ios"] .dev-ios, body[data-dev="android"] .dev-android, body[data-dev="pc"] .dev-pc { display: inline; }
   body[data-dev="ios"] .st-tip.dev-ios, body[data-dev="android"] .st-tip.dev-android { display: block; }
@@ -126,7 +129,7 @@
 </head>
 <body>
 <main>
-  <header><h1>ARR Jelentés</h1><nav class="hlinks"><a href="utmutato.html">Útmutató</a><span>v2.9</span></nav></header>
+  <header><h1>ARR Jelentés</h1><nav class="hlinks"><a href="utmutato.html">Útmutató</a><span>v3.0</span></nav></header>
 
   <!-- Kulcsvarázsló: első indításkor, amíg nincs AeroDataBox kulcs -->
   <section class="card wiz" id="wizard" hidden>
@@ -178,6 +181,12 @@
     </ol>
     <div class="wiz-done" id="wizDone" hidden>✓ Kulcs elmentve – kész is vagy! Válaszd ki a PDF-et.</div>
   </section>
+
+  <!-- Emlékeztető, ha a varázslót elrejtették, de még nincs kulcs -->
+  <button class="reminder" id="wizReminder" hidden>
+    <span>🔑 Még nincs AeroDataBox kulcs – érkezési idők nélkül készül a jelentés.</span>
+    <b>Beállítás folytatása →</b>
+  </button>
 
   <section class="card">
     <label class="btn file">📄 PDF kiválasztása

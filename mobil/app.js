@@ -103,13 +103,16 @@ document.body.dataset.dev = /iPhone|iPad|iPod/.test(navigator.userAgent) ||
   (/Macintosh/.test(navigator.userAgent) && navigator.maxTouchPoints > 1) ? 'ios'
   : /Android/.test(navigator.userAgent) ? 'android' : 'pc';
 
-let wizForced = false, wizJustDone = false;
+// A „Később” csak erre a megnyitásra rejti el; amíg nincs kulcs, legközelebb újra megjelenik.
+let wizForced = false, wizJustDone = false, wizHiddenNow = false;
+store.del('wizDismissed');   // régi (végleges) elrejtés törlése
 const wizStep = () => store.get('wizStep', 1);
 
 function renderWizard() {
   const hasKey = !!store.get('key.aerodatabox');
-  const show = wizJustDone || wizForced || (!hasKey && !store.get('wizDismissed'));
+  const show = wizJustDone || wizForced || (!hasKey && !wizHiddenNow);
   $('wizard').hidden = !show;
+  $('wizReminder').hidden = show || hasKey;
   if (!show) return;
   const step = wizStep();
   document.querySelectorAll('#wizard .steps li').forEach(li => {
@@ -123,7 +126,6 @@ function setWizStep(n) { store.set('wizStep', Math.max(wizStep(), n)); renderWiz
 
 function saveWizardKey(key) {
   store.set('key.aerodatabox', key);
-  store.del('wizDismissed');
   wizJustDone = true; wizForced = false;
   refreshKeys();
   renderWizard();
@@ -159,13 +161,17 @@ $('wizManualSave').addEventListener('click', () => {
   saveWizardKey(key);
 });
 $('wizClose').addEventListener('click', () => {
-  if (!wizJustDone) store.set('wizDismissed', true);
+  if (!wizJustDone) wizHiddenNow = true;
   wizJustDone = false; wizForced = false;
   renderWizard();
 });
+$('wizReminder').addEventListener('click', () => {
+  wizHiddenNow = false;
+  renderWizard();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
 $('wizOpen').addEventListener('click', () => {
-  wizForced = true; wizJustDone = false;
-  store.del('wizDismissed');
+  wizForced = true; wizJustDone = false; wizHiddenNow = false;
   if (!store.get('key.aerodatabox')) store.set('wizStep', Math.min(wizStep(), 3));
   $('settings').open = false;
   renderWizard();
