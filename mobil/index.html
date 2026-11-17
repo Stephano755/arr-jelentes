@@ -87,13 +87,91 @@
   .bar i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
   .stat.low .bar i { background: var(--warn); }
   .stat.low .stat-top span { color: var(--warn); }
+  /* kulcsvarázsló */
+  .wiz { border-color: #1e3a6e; background: #0f1626; }
+  .wiz-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+  .link { background: none; border: 0; color: var(--muted); font: inherit; font-size: 14px; cursor: pointer; padding: 4px; text-decoration: underline; }
+  .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: st; }
+  .steps li { counter-increment: st; position: relative; padding: 12px 12px 12px 48px; border-radius: 12px;
+              border: 1px solid var(--border); background: var(--card); display: grid; gap: 8px; }
+  .steps li::before { content: counter(st); position: absolute; left: 12px; top: 12px; width: 26px; height: 26px; border-radius: 50%;
+                      display: grid; place-items: center; font-weight: 700; font-size: 14px; background: var(--field); color: var(--muted); }
+  .steps li.done { opacity: .55; padding-top: 10px; padding-bottom: 10px; }
+  .steps li.done::before { content: "✓"; background: #10261a; color: var(--ok); }
+  .steps li.done .st-text, .steps li.done .st-btns, .steps li.done .wiz-manual,
+  .steps li.todo .st-text, .steps li.todo .st-btns, .steps li.todo .wiz-manual { display: none; }
+  .steps li.todo { opacity: .45; padding-top: 10px; padding-bottom: 10px; }
+  .steps li.now { border-color: var(--accent); }
+  .steps li.now::before { background: var(--accent); color: #fff; }
+  .st-title { font-weight: 600; min-height: 26px; display: flex; align-items: center; }
+  .st-text { font-size: 15px; color: #c7c7d1; }
+  .st-tip { display: block; margin-top: 6px; font-size: 13px; color: var(--muted); }
+  .st-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .st-btns.one { grid-template-columns: 1fr; }
+  .st-btns .btn { text-decoration: none; min-height: 44px; font-size: 15px; }
+  .st-btns a.btn { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.ghost { background: transparent; }
+  .wiz-manual { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
+  .wiz-manual input { min-height: 44px; padding: 8px 10px; font: inherit; font-size: 15px; color: var(--fg);
+                      background: var(--field); border: 1px solid var(--border); border-radius: 10px; min-width: 0; }
+  .wiz-done { color: var(--ok); font-weight: 600; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(59,130,246,.6); } 50% { box-shadow: 0 0 0 8px rgba(59,130,246,0); } }
+  .pulse { animation: pulse 1.4s ease-in-out 3; }
   @media (max-width: 420px) { .row, .btns { grid-template-columns: 1fr; } }
 </style>
 <script src="vendor/jszip.min.js"></script>
 </head>
 <body>
 <main>
-  <header><h1>ARR Jelentés</h1><nav class="hlinks"><a href="utmutato.html">Útmutató</a><span>v2.7</span></nav></header>
+  <header><h1>ARR Jelentés</h1><nav class="hlinks"><a href="utmutato.html">Útmutató</a><span>v2.8</span></nav></header>
+
+  <!-- Kulcsvarázsló: első indításkor, amíg nincs AeroDataBox kulcs -->
+  <section class="card wiz" id="wizard" hidden>
+    <div class="wiz-head">
+      <b>Első beállítás – AeroDataBox kulcs</b>
+      <button class="link" id="wizClose">Később</button>
+    </div>
+    <p class="hint">Egyszer kell megcsinálni, kb. 2 perc. Mindegyik gomb új lapon nyílik – utána gyere vissza ide.</p>
+    <ol class="steps">
+      <li data-step="1">
+        <div class="st-title">RapidAPI fiók</div>
+        <div class="st-text">Regisztrálj vagy lépj be – Google-fiókkal a leggyorsabb.</div>
+        <div class="st-btns">
+          <a class="btn" data-go="2" href="https://rapidapi.com/auth/sign-up" target="_blank" rel="noopener">Regisztráció</a>
+          <button class="btn ghost" data-go="2">Már van fiókom</button>
+        </div>
+      </li>
+      <li data-step="2">
+        <div class="st-title">Ingyenes csomag</div>
+        <div class="st-text">Az AeroDataBox oldalán válaszd a <b>Basic</b> (ingyenes) csomagot → <b>Subscribe</b>. Kártya nem kell.</div>
+        <div class="st-btns">
+          <a class="btn" href="https://rapidapi.com/aedbx-aedbx/api/aerodatabox/pricing" target="_blank" rel="noopener">Csomag kiválasztása</a>
+          <button class="btn ghost" data-go="3">Kész, megvan</button>
+        </div>
+      </li>
+      <li data-step="3">
+        <div class="st-title">Kulcs másolása</div>
+        <div class="st-text">Bal oldalt <b>My Apps</b> → <b>default-application_…</b> melletti <b>˅</b> → <b>Authorization</b> → a kulcs melletti <b>másolás</b> ikon.
+          <span class="st-tip">Ha a szöveg betűnként, függőlegesen jelenik meg: fordítsd fekvőre a telefont, vagy kapcsold be az asztali nézetet.</span></div>
+        <div class="st-btns">
+          <a class="btn" id="wizOpenKeys" href="https://rapidapi.com/developer/apps" target="_blank" rel="noopener">Kulcs megnyitása</a>
+          <button class="btn ghost" data-go="4">Kimásoltam</button>
+        </div>
+      </li>
+      <li data-step="4">
+        <div class="st-title">Kulcs mentése</div>
+        <div class="st-text" id="wizPasteText">Koppints a gombra – az app beolvassa a kimásolt kulcsot.</div>
+        <div class="st-btns one">
+          <button class="btn primary" id="wizPaste">📋 Kulcs beillesztése</button>
+        </div>
+        <div class="wiz-manual">
+          <input id="wizManual" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="…vagy illeszd be ide kézzel">
+          <button class="btn" id="wizManualSave">Mentés</button>
+        </div>
+      </li>
+    </ol>
+    <div class="wiz-done" id="wizDone" hidden>✓ Kulcs elmentve – kész is vagy! Válaszd ki a PDF-et.</div>
+  </section>
 
   <section class="card">
     <label class="btn file">📄 PDF kiválasztása
@@ -139,7 +217,7 @@
       </div>
 
       <h2>API kulcsok</h2>
-      <p class="hint">Még nincs kulcsod? <a href="utmutato.html#aerodatabox">Így szerezheted meg (útmutató linkekkel)</a></p>
+      <p class="hint">Még nincs kulcsod? <button class="link" id="wizOpen" style="padding:0;color:var(--accent)">Kulcsvarázsló indítása</button> · <a href="utmutato.html#aerodatabox">Részletes útmutató</a></p>
       <p class="hint" id="keyState"></p>
       <input id="keyAdb" type="password" autocomplete="off" autocapitalize="off" spellcheck="false">
       <input id="keyAv" type="password" autocomplete="off" autocapitalize="off" spellcheck="false">

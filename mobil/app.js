@@ -73,7 +73,8 @@ function refreshKeys() {
   $('keyAv').placeholder = av ? '•••••••• (mentve)' : 'Aviationstack kulcs (nem kötelező)';
 }
 $('saveKeys').addEventListener('click', () => {
-  if ($('keyAdb').value.trim()) store.set('key.aerodatabox', $('keyAdb').value.trim());
+  const adb = $('keyAdb').value.trim();
+  if (adb) store.set('key.aerodatabox', findRapidKey(adb) || adb);
   if ($('keyAv').value.trim()) store.set('key.aviationstack', $('keyAv').value.trim());
   refreshKeys();
   log('API kulcsok mentve.');
@@ -83,6 +84,96 @@ $('deleteKeys').addEventListener('click', () => {
   store.del('key.aerodatabox'); store.del('key.aviationstack');
   refreshKeys();
   log('API kulcsok törölve.');
+  renderWizard();
+});
+
+// ---------------------------------------------------------------- kulcsvarázsló
+// RapidAPI kulcs formája: …msh…p1…jsn… (kb. 50 karakter). Bármilyen kimásolt szövegből kiszedi.
+const RAPID_KEY_RE = /[A-Za-z0-9]{8,12}msh[A-Za-z0-9]{12,20}p1[A-Za-z0-9]{10,14}jsn[A-Za-z0-9]{10,14}/;
+function findRapidKey(text) {
+  const t = String(text || '');
+  const m = t.match(RAPID_KEY_RE);
+  if (m) return m[0];
+  const s = t.trim();
+  return /^[A-Za-z0-9]{40,60}$/.test(s) ? s : null;   // ismeretlen, de kulcsnak tűnő formátum
+}
+
+let wizForced = false, wizJustDone = false;
+const wizStep = () => store.get('wizStep', 1);
+
+function renderWizard() {
+  const hasKey = !!store.get('key.aerodatabox');
+  const show = wizJustDone || wizForced || (!hasKey && !store.get('wizDismissed'));
+  $('wizard').hidden = !show;
+  if (!show) return;
+  const step = wizStep();
+  document.querySelectorAll('#wizard .steps li').forEach(li => {
+    const n = +li.dataset.step;
+    li.className = wizJustDone || n < step ? 'done' : n === step ? 'now' : 'todo';
+  });
+  $('wizDone').hidden = !wizJustDone;
+  $('wizClose').textContent = wizJustDone ? 'Bezárás' : 'Később';
+}
+function setWizStep(n) { store.set('wizStep', Math.max(wizStep(), n)); renderWizard(); }
+
+function saveWizardKey(key) {
+  store.set('key.aerodatabox', key);
+  store.del('wizDismissed');
+  wizJustDone = true; wizForced = false;
+  refreshKeys();
+  renderWizard();
+  log(`AeroDataBox kulcs elmentve (…${key.slice(-4)}).`, 'ok');
+  $('wizard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/** Vágólap olvasása. fromTap: a felhasználó koppintott (iPhone-on csak így engedi). */
+async function tryClipboard(fromTap) {
+  if (!navigator.clipboard?.readText) {
+    if (fromTap) $('wizPasteText').textContent = 'Ez a böngésző nem engedi a vágólap olvasását – illeszd be a kulcsot alul kézzel.';
+    return false;
+  }
+  try {
+    const key = findRapidKey(await navigator.clipboard.readText());
+    if (key) { saveWizardKey(key); return true; }
+    if (fromTap) $('wizPasteText').textContent = 'A vágólapon nem találtam RapidAPI kulcsot. Másold ki újra a kulcsot (3. lépés), majd koppints ismét – vagy illeszd be alul kézzel.';
+  } catch {
+    if (fromTap) $('wizPasteText').textContent = 'A vágólap olvasása nincs engedélyezve – illeszd be a kulcsot alul kézzel (nyomd meg hosszan a mezőt → Beillesztés).';
+  }
+  return false;
+}
+
+document.querySelectorAll('#wizard [data-go]').forEach(el =>
+  el.addEventListener('click', () => setTimeout(() => setWizStep(+el.dataset.go), el.tagName === 'A' ? 400 : 0)));
+$('wizOpenKeys').addEventListener('click', () => store.set('wizAwaitKey', true));
+$('wizPaste').addEventListener('click', () => tryClipboard(true));
+$('wizManualSave').addEventListener('click', () => {
+  const v = $('wizManual').value;
+  const key = findRapidKey(v) || (v.trim().length >= 30 ? v.trim() : null);
+  if (!key) { $('wizPasteText').textContent = 'Ez nem tűnik RapidAPI kulcsnak (kb. 50 betű és szám, benne „msh” és „jsn”).'; return; }
+  $('wizManual').value = '';
+  saveWizardKey(key);
+});
+$('wizClose').addEventListener('click', () => {
+  if (!wizJustDone) store.set('wizDismissed', true);
+  wizJustDone = false; wizForced = false;
+  renderWizard();
+});
+$('wizOpen').addEventListener('click', () => {
+  wizForced = true; wizJustDone = false;
+  store.del('wizDismissed');
+  if (!store.get('key.aerodatabox')) store.set('wizStep', Math.min(wizStep(), 3));
+  $('settings').open = false;
+  renderWizard();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+// Visszatérés a RapidAPI-ról: ha a kulcs már a vágólapon van, magától elmenti; ha nem, a beillesztés gombra irányít.
+document.addEventListener('visibilitychange', async () => {
+  if (document.visibilityState !== 'visible' || $('wizard').hidden || wizJustDone || !store.get('wizAwaitKey')) return;
+  setWizStep(4);
+  if (!(await tryClipboard(false))) {
+    $('wizPaste').classList.remove('pulse'); void $('wizPaste').offsetWidth; $('wizPaste').classList.add('pulse');
+    $('wizPaste').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
 });
 
 // ---------------------------------------------------------------- PDF
@@ -176,8 +267,10 @@ $('saveLimits').addEventListener('click', () => {
 // ---------------------------------------------------------------- API hívások
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let lastAdb = 0;
+let adbAuthFailed = false;   // 401/403 után ebben a futásban nem próbálkozik tovább
 
 async function adbGet(path, key, what) {
+  if (adbAuthFailed) return null;
   for (let attempt = 0; attempt < 3; attempt++) {
     const wait = AERODATABOX_MIN_INTERVAL - (Date.now() - lastAdb);
     if (wait > 0) await sleep(wait);
@@ -200,6 +293,13 @@ async function adbGet(path, key, what) {
     }
     if (r.status === 429) { await sleep(2000 + attempt * 2000); continue; }
     if (r.status === 204) return null;
+    if (r.status === 401 || r.status === 403) {
+      adbAuthFailed = true;
+      log(r.status === 401
+        ? '  ! AeroDataBox: a kulcs hibás. Ellenőrizd a Beállításokban, vagy futtasd újra a kulcsvarázslót.'
+        : '  ! AeroDataBox: nincs előfizetésed az AeroDataBox-ra (403). A RapidAPI-n válaszd az ingyenes Basic csomagot (Útmutató / kulcsvarázsló 2. lépés).', 'err');
+      return null;
+    }
     if (!r.ok) { log(`  ! AeroDataBox HTTP ${r.status} (${what})`, 'err'); return null; }
     try { return await r.json(); } catch { return null; }
   }
@@ -309,6 +409,7 @@ $('go').addEventListener('click', async () => {
   if (!adbKey && !confirm('Nincs AeroDataBox kulcs megadva – érkezési idők nélkül készüljön el a jelentés?')) return;
   store.set('lastShip', ship);
   runCalls = { aerodatabox: 0, aviationstack: 0 };
+  adbAuthFailed = false;
   $('go').disabled = true;
   $('result').hidden = true;
   $('go').textContent = 'Készül…';
@@ -401,6 +502,6 @@ $('share').addEventListener('click', async () => {
 refreshTemplateLabel();
 refreshKeys();
 renderStats();
-if (!store.get('key.aerodatabox')) $('settings').open = true;
+renderWizard();
 if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('./sw.js').catch(() => {});
 window.__arr = { loadPdf };   // teszteléshez
