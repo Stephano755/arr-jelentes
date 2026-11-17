@@ -25,11 +25,25 @@
   header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 4px 2px; }
   h1 { font-size: 22px; margin: 0; }
   .back { color: var(--accent); text-decoration: none; font-weight: 600; white-space: nowrap; }
+
+  /* eszközválasztó */
+  .seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; background: var(--card);
+         border: 1px solid var(--border); border-radius: 12px; position: sticky; top: max(8px, env(safe-area-inset-top)); z-index: 2; }
+  .seg button { font-family: inherit; font-weight: 600; font-size: 15px; line-height: 1.2; color: var(--muted); background: transparent; border: 0;
+                border-radius: 9px; padding: 10px 6px; cursor: pointer; }
+  .seg button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  .detected { color: var(--muted); font-size: 13px; text-align: center; margin: -6px 0 0; }
+
+  /* platform-specifikus tartalom */
+  body[data-p="ios"] .p-android, body[data-p="ios"] .p-pc, body[data-p="ios"] .p-notios,
+  body[data-p="android"] .p-ios, body[data-p="android"] .p-pc, body[data-p="android"] .p-notandroid,
+  body[data-p="pc"] .p-ios, body[data-p="pc"] .p-android, body[data-p="pc"] .p-phone { display: none !important; }
+
   nav.toc { display: flex; flex-wrap: wrap; gap: 8px; }
   nav.toc a { color: var(--fg); text-decoration: none; background: var(--field); border: 1px solid var(--border);
               border-radius: 999px; padding: 6px 12px; font-size: 14px; }
-  section { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 18px; }
-  h2 { font-size: 18px; margin: 0 0 4px; display: flex; align-items: center; gap: 10px; }
+  section { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 18px; scroll-margin-top: 80px; }
+  h2 { font-size: 18px; margin: 0 0 4px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
   .tag { font-size: 12px; font-weight: 600; padding: 2px 8px; border-radius: 999px; background: #10261a; color: var(--ok); }
   .tag.opt { background: #2a2410; color: var(--warn); }
   .lead { color: var(--muted); margin: 0 0 12px; }
@@ -40,46 +54,79 @@
           text-decoration: none; border-radius: 10px; font-weight: 600; font-size: 15px; }
   code, kbd { font: 14px ui-monospace, Menlo, Consolas, monospace; background: var(--field); border: 1px solid var(--border);
               border-radius: 6px; padding: 1px 6px; }
-  .note { margin-top: 14px; padding: 12px 14px; border-radius: 10px; background: var(--field); border: 1px solid var(--border);
-          font-size: 15px; }
+  .note { margin: 14px 0 0; padding: 12px 14px; border-radius: 10px; background: var(--field); border: 1px solid var(--border); font-size: 15px; }
   .note b { color: var(--warn); }
   .note.ok b { color: var(--ok); }
   details { margin-top: 12px; background: var(--field); border: 1px solid var(--border); border-radius: 10px; }
   details summary { padding: 12px 14px; cursor: pointer; font-weight: 600; }
   details > div { padding: 0 14px 14px; }
-  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-  .grid > div { background: var(--field); border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-size: 15px; }
-  .grid b { display: block; margin-bottom: 4px; }
-  @media (max-width: 560px) { .grid { grid-template-columns: 1fr; } }
 </style>
 </head>
-<body>
+<body data-p="pc">
 <main>
   <header>
     <h1>Útmutató</h1>
     <a class="back" href="./">← Vissza az apphoz</a>
   </header>
 
+  <div class="seg" role="group" aria-label="Eszköz">
+    <button data-set="ios">iPhone / iPad</button>
+    <button data-set="android">Android</button>
+    <button data-set="pc">Számítógép</button>
+  </div>
+  <p class="detected" id="detected"></p>
+
   <nav class="toc">
-    <a href="#aerodatabox">1. AeroDataBox kulcs</a>
-    <a href="#aviationstack">2. Aviationstack kulcs</a>
-    <a href="#megadas">3. Kulcsok megadása</a>
-    <a href="#telepites">4. Telepítés</a>
+    <a href="#telepites">1. Telepítés</a>
+    <a href="#aerodatabox">2. AeroDataBox kulcs</a>
+    <a href="#aviationstack" class="p-pc">3. Aviationstack kulcs</a>
+    <a href="#megadas">Kulcsok megadása</a>
+    <a href="#mentes">Jelentés mentése</a>
   </nav>
 
+  <!-- 1. TELEPÍTÉS ------------------------------------------------------------------>
+  <section id="telepites">
+    <h2>1. Telepítés <span class="tag opt">ajánlott</span></h2>
+    <p class="lead">Nem kötelező, de így appként indul, teljes képernyőn, és internet nélkül is megnyílik.</p>
+    <ol class="p-ios">
+      <li>Nyisd meg az appot <b>Safariban</b>: <a href="./">arr-jelentes-9570.netlify.app</a> (más böngészőből iPhone-on nem mindig tehető ki).</li>
+      <li>Koppints alul a <b>Megosztás</b> ikonra (négyzet felfelé mutató nyíllal).</li>
+      <li>Görgess le, és válaszd a <b>Főképernyőhöz adás</b> lehetőséget → <b>Hozzáadás</b>.</li>
+      <li>Ezután mindig a főképernyőn lévő <b>ARR Jelentés</b> ikonról indítsd.</li>
+    </ol>
+    <p class="note p-ios"><b>Fontos iPhone-on / iPaden:</b> a Safari és a főképernyős app külön tárolót használ. A kulcsokat a <b>főképernyős appban</b> add meg, különben ott nem lesznek meg.</p>
+    <ol class="p-android">
+      <li>Nyisd meg az appot <b>Chrome-ban</b>: <a href="./">arr-jelentes-9570.netlify.app</a></li>
+      <li>Koppints a jobb felső <b>⋮</b> menüre → <b>Alkalmazás telepítése</b> (vagy <b>Hozzáadás a kezdőképernyőhöz</b>).</li>
+      <li>Erősítsd meg a <b>Telepítés</b> gombbal – az ikon megjelenik a kezdőképernyőn és az alkalmazások között.</li>
+    </ol>
+    <ol class="p-pc">
+      <li>Nyisd meg az appot <b>Chrome-ban</b> vagy <b>Edge-ben</b>: <a href="./">arr-jelentes-9570.netlify.app</a></li>
+      <li>A címsor jobb oldalán kattints a <b>Telepítés</b> ikonra (monitor lefelé nyíllal), vagy a menüben: <b>Alkalmazás telepítése</b>.</li>
+      <li>Ezután külön ablakban, a Start menüből is indítható. Telepítés nélkül, sima böngészőfülön is ugyanúgy működik.</li>
+    </ol>
+    <p class="note p-pc">Windowson van egy <b>EXE</b> változat is (ARR_Jelentes.exe) – az a gépen tárolja a kulcsokat, és az asztalra menti a jelentést. Ugyanazt tudja, mint ez az app.</p>
+  </section>
+
+  <!-- 2. AERODATABOX ------------------------------------------------------------------>
   <section id="aerodatabox">
-    <h2>1. AeroDataBox kulcs <span class="tag">szükséges</span></h2>
+    <h2>2. AeroDataBox kulcs <span class="tag">szükséges</span></h2>
     <p class="lead">Ebből jönnek a valós érkezési idők és a legtöbb járatszám-csere. A RapidAPI-n keresztül működik, ingyenes csomaggal, bankkártya nélkül.</p>
+    <p class="note p-phone"><b>Tipp:</b> a RapidAPI oldala telefonon nehezen kezelhető. Ha van kéznél számítógép, ott a legegyszerűbb: válts fent a <b>Számítógép</b> fülre, másold ki ott a kulcsot, és küldd el magadnak (saját e-mail, jegyzet) – a telefonon csak be kell illesztened.</p>
     <ol>
       <li>Regisztrálj (vagy jelentkezz be) a RapidAPI-n – Google-fiókkal is lehet.<br>
         <a class="btn" href="https://rapidapi.com/auth/sign-up" target="_blank" rel="noopener">RapidAPI regisztráció</a></li>
-      <li>Nyisd meg az AeroDataBox <b>Pricing</b> oldalát, és válaszd az ingyenes <b>Basic</b> csomagot (<i>Subscribe</i>). Ehhez nem kell kártya; ha a keret elfogy, a kérések egyszerűen elutasításra kerülnek.<br>
+      <li>Nyisd meg az AeroDataBox <b>Pricing</b> oldalát, és válaszd az ingyenes <b>Basic</b> csomagot (<i>Subscribe</i>). Kártya nem kell; ha a keret elfogy, a kérések egyszerűen elutasításra kerülnek.<br>
         <a class="btn" href="https://rapidapi.com/aedbx-aedbx/api/aerodatabox/pricing" target="_blank" rel="noopener">AeroDataBox csomagok</a></li>
-      <li>Másold ki a kulcsodat (<code>X-RapidAPI-Key</code>): a RapidAPI-n felül a <b>Console</b> → az alkalmazásod (<code>default-application_…</code>) → <b>Authorization</b> / kulcsok résznél, a másolás ikonnal.<br>
+      <li class="p-pc">Másold ki a kulcsodat (<code>X-RapidAPI-Key</code>): felül a <b>Console</b> → az alkalmazásod (<code>default-application_…</code>) → <b>Authorization</b> / kulcsok rész, a másolás ikonnal.<br>
+        <a class="btn" href="https://rapidapi.com/developer/apps" target="_blank" rel="noopener">Saját alkalmazások (kulcs)</a></li>
+      <li class="p-ios">Kapcsold át a Safarit asztali nézetre, mert a RapidAPI telefonos nézete nem mutat mindent: a címsorban koppints az <b>aA</b> (vagy ⋯) ikonra → <b>Asztali webhely kérése</b>.</li>
+      <li class="p-android">Kapcsold át a Chrome-ot asztali nézetre, mert a RapidAPI telefonos nézete nem mutat mindent: <b>⋮</b> menü → pipáld be az <b>Asztali webhely</b> lehetőséget.</li>
+      <li class="p-phone">Nyisd meg a saját alkalmazásaidat: <b>Console</b> → az alkalmazásod (<code>default-application_…</code>) → <b>Authorization</b> / kulcsok. Koppints a kulcs melletti <b>másolás</b> ikonra (ha nincs ilyen: tartsd lenyomva a kulcsot → <b>Mindet kijelöl</b> → <b>Másolás</b>).<br>
         <a class="btn" href="https://rapidapi.com/developer/apps" target="_blank" rel="noopener">Saját alkalmazások (kulcs)</a></li>
     </ol>
-    <details>
-      <summary>Nem lehet kimásolni a kulcsot? – így biztosan megy (számítógépen)</summary>
+    <details class="p-pc">
+      <summary>Nem lehet kimásolni a kulcsot? – így biztosan megy</summary>
       <div>
         <ol>
           <li>Nyisd meg az AeroDataBox oldalt, és bármelyik végpontnál menj az <b>Authorization</b> fülre – ott látszik az <code>X-RapidAPI-Key</code> mező.
@@ -87,46 +134,79 @@
           <li>Kattints <b>jobb gombbal</b> a kulcs mezőjére → <b>Vizsgálat</b> (Inspect). Megnyílik a fejlesztői panel, kijelölve a mezőt.</li>
           <li>Keresd meg a kijelölt sorban a <code>value="…"</code> részt – az idézőjelek közti hosszú szöveg a kulcs. Dupla kattintással kijelölheted, majd <kbd>Ctrl</kbd>+<kbd>C</kbd>.</li>
         </ol>
-        <p class="note"><b>Telefonra:</b> a kulcsot a legegyszerűbb a gépen kimásolni, és magadnak elküldeni (pl. saját e-mailben vagy jegyzetben), majd a telefonon beilleszteni.</p>
       </div>
     </details>
     <p class="note"><b>Vigyázz a kulcsra:</b> olyan, mint egy jelszó – ne küldd el másnak, és képernyőképen se látsszon. Ha kiszivárgott, a RapidAPI-n új kulcsot kérhetsz.</p>
   </section>
 
-  <section id="aviationstack">
-    <h2>2. Aviationstack kulcs <span class="tag opt">nem kötelező</span></h2>
-    <p class="lead">Csak tartalék a DL / AA / UA codeshare-járatszámok cseréjéhez (pl. AA → BA), ha az AeroDataBox listájából és a PDF-ből nem derül ki. Ingyenes csomag: havi 100 kérés, bankkártya nélkül.</p>
+  <!-- 3. AVIATIONSTACK (csak gépen) ----------------------------------------------------->
+  <section id="aviationstack" class="p-pc">
+    <h2>3. Aviationstack kulcs <span class="tag opt">nem kötelező</span></h2>
+    <p class="lead">Csak tartalék a DL / AA / UA codeshare-járatszámok cseréjéhez (pl. AA → BA), ha az AeroDataBox listájából nem derül ki. Ingyenes csomag: havi 100 kérés, bankkártya nélkül.</p>
     <ol>
       <li>Regisztrálj az ingyenes (<b>Free</b>) csomaggal.<br>
         <a class="btn" href="https://aviationstack.com/signup/free" target="_blank" rel="noopener">Aviationstack regisztráció</a></li>
       <li>Bejelentkezés után a <b>Dashboard</b> tetején látod: <i>Your API Access Key</i> – a mellette lévő gombbal másolhatod.<br>
         <a class="btn" href="https://aviationstack.com/dashboard" target="_blank" rel="noopener">Aviationstack dashboard</a></li>
     </ol>
-    <p class="note"><b>Tudnivaló:</b> az ingyenes Aviationstack csomag csak titkosítatlan kapcsolatot enged, ezért a <b>böngészős / mobil</b> appban nem használható – ott az app a PDF-ből és az AeroDataBox listájából párosít. A Windowsos (EXE) programban működik.</p>
+    <p class="note"><b>Tudnivaló:</b> az ingyenes Aviationstack csak a <b>Windowsos EXE</b>-ben működik. Böngészőben (és telefonon) nem használható, ott nincs is rá szükség: az app a PDF-ből és az AeroDataBox listájából párosít.</p>
   </section>
+  <p class="note p-phone" style="margin:0"><b>Aviationstack kulcs telefonon nem kell</b> – az ingyenes csomag böngészőből nem érhető el, az app nélküle is elvégzi a járatszám-cseréket.</p>
 
+  <!-- KULCSOK MEGADÁSA --------------------------------------------------------------------->
   <section id="megadas">
-    <h2>3. Kulcsok megadása az appban</h2>
+    <h2>Kulcsok megadása az appban</h2>
     <ol>
-      <li>Az app alján nyisd meg a <b>Beállítások</b> részt.</li>
-      <li>Az <b>API kulcsok</b> alatt illeszd be az AeroDataBox (és ha van, az Aviationstack) kulcsot, majd <b>Kulcsok mentése</b>.</li>
-      <li>Kész – a kulcsot nem kell többet megadni. A <b>Kulcsok törlése</b> gombbal bármikor törölheted.</li>
+      <li><span class="p-ios">Indítsd az appot a <b>főképernyőről</b>, és az </span><span class="p-notios">Az </span>app alján nyisd meg a <b>Beállítások</b> részt.</li>
+      <li>Az <b>API kulcsok</b> alatt <span class="p-phone">tartsd lenyomva a mezőt → <b>Beillesztés</b></span><span class="p-pc">kattints a mezőbe → <kbd>Ctrl</kbd>+<kbd>V</kbd></span>, majd <b>Kulcsok mentése</b>.</li>
+      <li>Kész – nem kell többet megadni. A <b>Kulcsok törlése</b> gombbal bármikor törölheted.</li>
     </ol>
-    <p class="note ok"><b>Mindenkinek a sajátja:</b> a kulcsok, a havi API-számláló és a választott sablon <b>csak a te eszközödön</b> tárolódnak – nem kerülnek fel a szerverre, és más nem látja őket. Ha többen használjátok az appot, mindenki a saját kulcsát adja meg a saját telefonján / gépén.</p>
+    <p class="note ok"><b>Mindenkinek a sajátja:</b> a kulcsok, a havi API-számláló és a választott sablon <b>csak a te eszközödön</b> tárolódnak – nem kerülnek fel a szerverre, és más nem látja őket. Ha a böngésző adatait törlöd, újra meg kell adni.</p>
   </section>
 
-  <section id="telepites">
-    <h2>4. Telepítés a kezdőképernyőre</h2>
-    <p class="lead">Nem kötelező, de így appként indul, teljes képernyőn, és internet nélkül is megnyílik.</p>
-    <div class="grid">
-      <div><b>iPhone / iPad</b>Safariban nyisd meg az appot → <b>Megosztás</b> ikon → <b>Főképernyőhöz adás</b>.</div>
-      <div><b>Android</b>Chrome-ban → jobb felső <b>⋮</b> menü → <b>Telepítés</b> / <b>Hozzáadás a kezdőképernyőhöz</b>.</div>
-      <div><b>Windows / Mac</b>Chrome vagy Edge → a címsor jobb oldalán a <b>Telepítés</b> ikon.</div>
-    </div>
-    <p class="note"><b>iPhone / iPad:</b> a Safari és a kezdőképernyőre tett app külön tárolót használ – a kulcsokat a <b>kezdőképernyős appban</b> add meg.</p>
+  <!-- JELENTÉS MENTÉSE ------------------------------------------------------------------>
+  <section id="mentes">
+    <h2>A kész jelentés mentése</h2>
+    <p class="lead">A „Jelentés készítése” után megjelenik a fájl (pl. <code>2026.11.17.VLH.xlsm</code>) két gombbal.</p>
+    <ol class="p-ios">
+      <li><b>Megosztás / Mentés</b> → <b>Mentés a Fájlokba</b> (pl. iCloud Drive), vagy válaszd a <b>Mail</b>-t, ha rögtön el akarod küldeni.</li>
+      <li>Megnyitáshoz az ingyenes <b>Microsoft Excel</b> app kell. A makrók telefonon nem futnak, de a kitöltött adatok megvannak.</li>
+    </ol>
+    <ol class="p-android">
+      <li><b>Megosztás / Mentés</b> → Gmail, Drive, OneDrive stb., vagy <b>Letöltés</b> → a fájl a <b>Letöltések</b> mappába kerül.</li>
+      <li>Megnyitáshoz az ingyenes <b>Microsoft Excel</b> app kell. A makrók telefonon nem futnak, de a kitöltött adatok megvannak.</li>
+    </ol>
+    <ol class="p-pc">
+      <li><b>Letöltés</b> → a böngésző a <b>Letöltések</b> mappába menti (vagy megkérdezi, hova).</li>
+      <li>Excelben megnyitva fent megjelenhet a „Védett nézet” / makró sáv – kattints a <b>Szerkesztés engedélyezése</b> gombra.</li>
+    </ol>
   </section>
 
   <p style="text-align:center"><a class="back" href="./">← Vissza az apphoz</a></p>
 </main>
+<script>
+(function () {
+  var ua = navigator.userAgent || '';
+  var isIOS = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var isAndroid = /Android/.test(ua);
+  var detected = isIOS ? 'ios' : isAndroid ? 'android' : 'pc';
+  var names = { ios: 'iPhone / iPad', android: 'Android', pc: 'számítógép' };
+  var saved = null;
+  try { saved = localStorage.getItem('arr.guidePlatform'); } catch (e) {}
+  var fromHash = (location.hash.match(/p=(ios|android|pc)/) || [])[1];
+  function set(p, remember) {
+    document.body.setAttribute('data-p', p);
+    document.querySelectorAll('.seg button').forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-set') === p));
+    });
+    if (remember) { try { localStorage.setItem('arr.guidePlatform', p); } catch (e) {} }
+  }
+  document.querySelectorAll('.seg button').forEach(function (b) {
+    b.addEventListener('click', function () { set(b.getAttribute('data-set'), true); });
+  });
+  document.getElementById('detected').textContent = 'Felismert eszköz: ' + names[detected] + ' – ha nem ez, válts fent.';
+  set(fromHash || saved || detected, false);
+})();
+</script>
 </body>
 </html>
