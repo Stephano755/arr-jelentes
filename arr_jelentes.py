@@ -32,7 +32,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, simpledialog, ttk
 
 APP_NAME = "ARR Jelentés"
-APP_VERSION = "2.5"
+APP_VERSION = "2.6"
 CONFIG_DIR = os.path.join(os.environ.get("APPDATA", os.path.expanduser("~")), "ARR-Jelentes")
 CONFIG_PATH = os.path.join(CONFIG_DIR, "config.json")
 
@@ -648,7 +648,7 @@ def build_report(cfg, pdf_path, ship, date, template, keys, log, parsed=None):
     if not transfers:
         raise RuntimeError(f"A PDF-ben nincs {ship} transzfer (TRSF) sor.")
     escorts = escorts_for(parsed, ship)
-    log(f"{ship}: {len(transfers)} transzfer, kísérők: {', '.join(escorts) or '–'}")
+    log(f"{ship}: {len(transfers)} transzfer, dolgozók: {', '.join(escorts) or '–'}")
     if len(transfers) > len(REPORT_ROWS):
         log(f"  ! {len(transfers)} transzfer van, a sablonban csak {len(REPORT_ROWS)} sor – a többi kimarad!")
 
@@ -860,7 +860,7 @@ class App(tk.Tk):
         ttk.Label(frm, text="Dátum:").grid(row=2, column=0, sticky="w", **pad)
         ttk.Entry(frm, textvariable=self.date_var, width=14).grid(row=2, column=1, sticky="w", **pad)
 
-        ttk.Label(frm, text="Kísérők:").grid(row=3, column=0, sticky="w", **pad)
+        ttk.Label(frm, text="Dolgozók:").grid(row=3, column=0, sticky="w", **pad)
         ttk.Label(frm, textvariable=self.escort_var).grid(row=3, column=1, columnspan=2, sticky="w", **pad)
 
         ttk.Label(frm, text="Sablon:").grid(row=4, column=0, sticky="w", **pad)
