@@ -1,5 +1,5 @@
 // Offline gyorsítótár az app fájljaihoz; az API hívásokat nem érinti.
-const CACHE = 'arr-jelentes-v2.6';
+const CACHE = 'arr-jelentes-v2.7';
 const FILES = ['./', 'index.html', 'app.js', 'pdfparse.js', 'xlsm.js', 'manifest.webmanifest',
   'vendor/jszip.min.js', 'vendor/pdf.min.mjs', 'vendor/pdf.worker.min.mjs',
   'icons/icon-180.png', 'icons/icon-192.png', 'icons/icon-512.png', 'sablon.xlsm', 'utmutato.html'];
