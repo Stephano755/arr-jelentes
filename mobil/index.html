@@ -92,17 +92,17 @@
   .wiz-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
   .link { background: none; border: 0; color: var(--muted); font: inherit; font-size: 14px; cursor: pointer; padding: 4px; text-decoration: underline; }
   .steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; counter-reset: st; }
-  .steps li { counter-increment: st; position: relative; padding: 12px 12px 12px 48px; border-radius: 12px;
+  .steps > li { counter-increment: st; position: relative; padding: 12px 12px 12px 48px; border-radius: 12px;
               border: 1px solid var(--border); background: var(--card); display: grid; gap: 8px; }
-  .steps li::before { content: counter(st); position: absolute; left: 12px; top: 12px; width: 26px; height: 26px; border-radius: 50%;
+  .steps > li::before { content: counter(st); position: absolute; left: 12px; top: 12px; width: 26px; height: 26px; border-radius: 50%;
                       display: grid; place-items: center; font-weight: 700; font-size: 14px; background: var(--field); color: var(--muted); }
-  .steps li.done { opacity: .55; padding-top: 10px; padding-bottom: 10px; }
-  .steps li.done::before { content: "✓"; background: #10261a; color: var(--ok); }
-  .steps li.done .st-text, .steps li.done .st-btns, .steps li.done .wiz-manual,
-  .steps li.todo .st-text, .steps li.todo .st-btns, .steps li.todo .wiz-manual { display: none; }
-  .steps li.todo { opacity: .45; padding-top: 10px; padding-bottom: 10px; }
-  .steps li.now { border-color: var(--accent); }
-  .steps li.now::before { background: var(--accent); color: #fff; }
+  .steps > li.done { opacity: .55; padding-top: 10px; padding-bottom: 10px; }
+  .steps > li.done::before { content: "✓"; background: #10261a; color: var(--ok); }
+  .steps > li.done .st-text, .steps > li.done .st-btns, .steps > li.done .wiz-manual,
+  .steps > li.todo .st-text, .steps > li.todo .st-btns, .steps > li.todo .wiz-manual { display: none; }
+  .steps > li.todo { opacity: .45; padding-top: 10px; padding-bottom: 10px; }
+  .steps > li.now { border-color: var(--accent); }
+  .steps > li.now::before { background: var(--accent); color: #fff; }
   .st-title { font-weight: 600; min-height: 26px; display: flex; align-items: center; }
   .st-text { font-size: 15px; color: #c7c7d1; }
   .st-tip { display: block; margin-top: 6px; font-size: 13px; color: var(--muted); }
@@ -116,9 +116,12 @@
                       background: var(--field); border: 1px solid var(--border); border-radius: 10px; min-width: 0; }
   .wiz-done { color: var(--ok); font-weight: 600; }
   .wiz-back { justify-self: start; font-size: 14px; }
-  .steps li.done .wiz-back, .steps li.todo .wiz-back { display: none; }
-  .steps li.done { cursor: pointer; }
-  .steps li.done .st-title::after { content: "· módosítás"; margin-left: 8px; font-weight: 400; font-size: 13px; color: var(--muted); }
+  .mini { margin: 0; padding-left: 20px; display: grid; gap: 6px; }
+  .mini li::marker { color: var(--muted); font-weight: 600; }
+  body[data-dev="ios"] .mini li.dev-ios, body[data-dev="android"] .mini li.dev-android { display: list-item; }
+  .steps > li.done .wiz-back, .steps > li.todo .wiz-back { display: none; }
+  .steps > li.done { cursor: pointer; }
+  .steps > li.done .st-title::after { content: "· módosítás"; margin-left: 8px; font-weight: 400; font-size: 13px; color: var(--muted); }
   .reminder { display: grid; gap: 4px; width: 100%; text-align: left; cursor: pointer; font: inherit; font-size: 14px;
               color: var(--fg); background: #2a2410; border: 1px solid #5a4a1a; border-radius: var(--r); padding: 12px 14px; }
   .reminder b { color: var(--warn); font-size: 15px; }
@@ -133,7 +136,7 @@
 </head>
 <body>
 <main>
-  <header><h1>ARR Jelentés</h1><nav class="hlinks"><a href="utmutato.html">Útmutató</a><span>v3.2</span></nav></header>
+  <header><h1>ARR Jelentés</h1><nav class="hlinks"><a href="utmutato.html">Útmutató</a><span>v3.3</span></nav></header>
 
   <!-- Kulcsvarázsló: első indításkor, amíg nincs AeroDataBox kulcs -->
   <section class="card wiz" id="wizard" hidden>
@@ -163,10 +166,16 @@
       <li data-step="3">
         <div class="st-title">Kulcs másolása</div>
         <div class="st-text">
-          <span class="dev dev-android"><b>Először:</b> a RapidAPI oldal telefonos nézetben nyílik meg (ezt kívülről nem lehet átállítani) – jobb felül <b>⋮</b> → pipáld be az <b>Asztali webhely</b> opciót. A Chrome ezt általában megjegyzi.<br></span>
-          <span class="dev dev-ios"><b>Először:</b> a RapidAPI oldal telefonos nézetben nyílik meg (ezt kívülről nem lehet átállítani) – a címsorban <b>aA</b> → <b>Asztali webhely kérése</b>. Tartósan: aA → Webhelybeállítások → Asztali webhely kérése.<br></span>
-          <span class="dev dev-ios dev-android">Utána a</span><span class="dev dev-pc">A</span> bal oldali menüben: <b>default-application_…</b> melletti <b>˅</b> → <b>Authorization</b> → a kulcs melletti <b>másolás</b> ikon<span class="dev dev-ios dev-android"> (két ujjal nagyíthatsz)</span>.
-          <span class="st-tip dev dev-ios dev-android">Ha még így is túl kicsi vagy betűnként függőleges a szöveg, fordítsd fekvőre a telefont.</span></div>
+          <ol class="mini">
+            <li>Koppints lent a <b>Kulcs megnyitása</b> gombra.</li>
+            <li class="dev dev-ios dev-android"><b>Fordítsd el a telefont fekvőre</b> – állva a RapidAPI oldala túl keskeny, és nem látszik a kulcs.</li>
+            <li>A bal oldali menüben, a <b>My Apps</b> alatt <span class="dev dev-ios dev-android">koppints</span><span class="dev dev-pc">kattints</span> a <b>default-application_…</b> melletti <b>˅</b> nyílra.</li>
+            <li>A lenyíló menüben válaszd az <b>Authorization</b> pontot.</li>
+            <li>Megjelenik a kulcs (<i>Application Key</i>) – <span class="dev dev-ios dev-android">koppints</span><span class="dev dev-pc">kattints</span> a mellette lévő <b>másolás</b> ikonra, majd gyere vissza ide.</li>
+          </ol>
+          <span class="st-tip dev dev-android">Ha fekvőben is túl kicsi: jobb felül <b>⋮</b> → <b>Asztali webhely</b>, és két ujjal nagyíts.</span>
+          <span class="st-tip dev dev-ios">Ha fekvőben is túl kicsi: a címsorban <b>aA</b> → <b>Asztali webhely kérése</b>, és két ujjal nagyíts.</span>
+        </div>
         <div class="st-btns">
           <a class="btn" id="wizOpenKeys" href="https://rapidapi.com/developer/apps" target="_blank" rel="noopener">Kulcs megnyitása</a>
           <button class="btn ghost" data-go="4">Kimásoltam</button>

@@ -115,7 +115,7 @@ function renderWizard() {
   $('wizReminder').hidden = show || hasKey;
   if (!show) return;
   const step = wizStep();
-  document.querySelectorAll('#wizard .steps li').forEach(li => {
+  document.querySelectorAll('#wizard .steps > li').forEach(li => {
     const n = +li.dataset.step;
     li.className = wizJustDone || n < step ? 'done' : n === step ? 'now' : 'todo';
   });
@@ -131,7 +131,7 @@ function setWizStep(n, exact = false) {
 document.querySelectorAll('#wizard [data-back]').forEach(b =>
   b.addEventListener('click', () => setWizStep(wizStep() - 1, true)));
 // kész (pipás) lépésre koppintva oda lehet visszaugrani
-document.querySelectorAll('#wizard .steps li').forEach(li =>
+document.querySelectorAll('#wizard .steps > li').forEach(li =>
   li.addEventListener('click', e => {
     if (!li.classList.contains('done') || wizJustDone || e.target.closest('a,button,input')) return;
     setWizStep(+li.dataset.step, true);
